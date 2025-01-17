@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Day {
+    SATURDAY
+    SUNDAY
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+}
+
+enum SlotTime {
+    FIRST
+    SECOND
+    THIRD
+    FOURTH
+    FIFTH
+    SIXTH
+    SEVENTH
+    EIGHTH
+}
+
+model Area {
+    id          Int        @id @default(autoincrement())
+    name        String
+    connections AreaEdge[] @relation("FromAreaConnections")
+    connectedTo AreaEdge[] @relation("ToAreaConnections")
+    rooms       Room[]
+
+    @@index([name])
+}
+
+model AreaEdge {
+    id         Int   @id @default(autoincrement())
+    fromAreaId Int
+    toAreaId   Int
+    fromArea   Area  @relation("FromAreaConnections", fields: [fromAreaId], references: [id])
+    toArea     Area  @relation("ToAreaConnections", fields: [toAreaId], references: [id])
+    distance   Float @default(1)
+}
+
+model Room {
+    id        Int      @id @default(autoincrement())
+    code      String
+    areaId    Int
+    area      Area     @relation(fields: [areaId], references: [id])
+    slots     Slot[]
+
+    @@index([code])
+}
+
+model Slot {
+    id Int @id @default(autoincrement())
+    day Day
+    time SlotTime
+    roomId Int
+    room Room @relation(fields: [roomId], references: [id])
+
+    @@index([day, time, roomId])
+}
