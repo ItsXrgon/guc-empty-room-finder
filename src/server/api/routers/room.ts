@@ -1,30 +1,38 @@
-import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { z } from 'zod';
+import { Day, SlotTime } from '@prisma/client';
+import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
 export const roomRouter = createTRPCRouter({
-	hello: publicProcedure
-		.input(z.object({ text: z.string() }))
+	showAllEmptyRooms: publicProcedure
+		.input(
+			z.object({
+				day: z.nativeEnum(Day),
+				startSlotTime: z.nativeEnum(SlotTime),
+				endSlotTime: z.nativeEnum(SlotTime),
+			})
+		)
 		.query(({ input }) => {
-			return {
-				greeting: `Hello ${input.text}`,
-			};
+			return 'Triggered!';
 		}),
-
-	create: publicProcedure
-		.input(z.object({ name: z.string().min(1) }))
-		.mutation(async ({ ctx, input }) => {
-			return ctx.db.post.create({
-				data: {
-					name: input.name,
-				},
-			});
+	showClosestEmptyRoom: publicProcedure
+		.input(
+			z.object({
+				areaId: z.number(),
+				day: z.nativeEnum(Day),
+				startSlotTime: z.nativeEnum(SlotTime),
+				endSlotTime: z.nativeEnum(SlotTime),
+			})
+		)
+		.query(({ input }) => {
+			return 'Triggered!';
 		}),
-
-	getLatest: publicProcedure.query(async ({ ctx }) => {
-		const post = await ctx.db.post.findFirst({
-			orderBy: { createdAt: "desc" },
-		});
-
-		return post ?? null;
-	}),
+	showRoomSchedule: publicProcedure
+		.input(
+			z.object({
+				roomId: z.number(),
+			})
+		)
+		.query(({ input }) => {
+			return 'Triggered!';
+		}),
 });

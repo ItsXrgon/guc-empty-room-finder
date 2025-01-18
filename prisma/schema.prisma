@@ -55,11 +55,22 @@ model Room {
     areaId    Int
     area      Area     @relation(fields: [areaId], references: [id])
     slots     Slot[]
+    tempSlots TempSlot[]
 
     @@index([code])
 }
 
 model Slot {
+    id Int @id @default(autoincrement())
+    day Day
+    time SlotTime
+    roomId Int
+    room Room @relation(fields: [roomId], references: [id])
+
+    @@index([day, time, roomId])
+}
+
+model TempSlot {
     id Int @id @default(autoincrement())
     day Day
     time SlotTime
