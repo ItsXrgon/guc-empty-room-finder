@@ -1,6 +1,6 @@
-import React from "react";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Label } from "~/components/ui/label";
+import React from 'react';
+import { Checkbox } from '~/components/ui/checkbox';
+import { Label } from '~/components/ui/label';
 
 export default function SlotTimesCheckbox() {
 	return (

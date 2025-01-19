@@ -1,15 +1,15 @@
-import puppeteer from "puppeteer";
+import puppeteer from 'puppeteer';
 
-import { beginConnection, endConnection } from "./utils";
+import { beginConnection, endConnection } from './utils';
 
-const OPEN_SELECT_SELECTOR = "a.icon_link.add_link";
-const COURSE_SELECT_SELECTOR = "select.select-box";
-const COURSE_SELECT_OPTIONS_SELECTOR = "select.select-box option";
-const SHOW_BUTTON_SELECTOR = "input.btn.btn-primary";
+const OPEN_SELECT_SELECTOR = 'a.icon_link.add_link';
+const COURSE_SELECT_SELECTOR = 'select.select-box';
+const COURSE_SELECT_OPTIONS_SELECTOR = 'select.select-box option';
+const SHOW_BUTTON_SELECTOR = 'input.btn.btn-primary';
 
 export async function getSlots() {
 	if (!process.env.PORTAL_USERNAME || !process.env.PORTAL_PASSWORD) {
-		throw new Error("Portal credentials not found.");
+		throw new Error('Portal credentials not found.');
 	}
 
 	beginConnection();
@@ -27,10 +27,10 @@ export async function getSlots() {
 		password: process.env.PORTAL_PASSWORD,
 	});
 	await page.goto(
-		"https://apps.guc.edu.eg/student_ext/Scheduling/SearchAcademicScheduled_001.aspx",
+		'https://apps.guc.edu.eg/student_ext/Scheduling/SearchAcademicScheduled_001.aspx',
 		{
-			waitUntil: "domcontentloaded",
-		},
+			waitUntil: 'domcontentloaded',
+		}
 	);
 
 	await page.click(OPEN_SELECT_SELECTOR);
@@ -38,7 +38,7 @@ export async function getSlots() {
 
 	const optionValues = await page.$$eval(
 		COURSE_SELECT_OPTIONS_SELECTOR,
-		(options) => options.map((option) => option.value),
+		(options) => options.map((option) => option.value)
 	);
 
 	for (const value of optionValues) {

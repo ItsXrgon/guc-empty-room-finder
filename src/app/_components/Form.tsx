@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
-import DaySelect from "./form/DaySelect";
-import DetectButton from "./form/DetectButton";
-import EndSlotSelect from "./form/EndSlotSelect";
-import SlotTimesCheckbox from "./form/SlotTimesCheckbox";
-import StartSlotSelect from "./form/StartSlotSelect";
+import DaySelect from './form/DaySelect';
+import DetectButton from './form/DetectButton';
+import EndSlotSelect from './form/EndSlotSelect';
+import SlotTimesCheckbox from './form/SlotTimesCheckbox';
+import StartSlotSelect from './form/StartSlotSelect';
 
 export default function Form() {
 	return (

@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Day } from "@prisma/client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback } from "react";
-import { Label } from "~/components/ui/label";
+import { Day } from '@prisma/client';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { useCallback } from 'react';
+import { Label } from '~/components/ui/label';
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "~/components/ui/select";
-import { DayOptions } from "~/lib/consts";
-import { SearchParams } from "~/lib/types";
+} from '~/components/ui/select';
+import { DayOptions } from '~/lib/consts';
+import { SearchParams } from '~/lib/types';
 
 export default function DaySelect() {
 	const router = useRouter();
@@ -22,17 +22,17 @@ export default function DaySelect() {
 	const handleDaySelect = useCallback(
 		(day: Day) => {
 			const queryParams = new URLSearchParams(
-				Array.from(searchParams.entries()),
+				Array.from(searchParams.entries())
 			);
 
 			queryParams.set(SearchParams.Day, day);
 
 			const search = queryParams.toString();
-			const query = search ? `?${search}` : "";
+			const query = search ? `?${search}` : '';
 
 			router.push(`${pathname}${query}`);
 		},
-		[pathname, router, searchParams],
+		[pathname, router, searchParams]
 	);
 
 	return (

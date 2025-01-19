@@ -1,15 +1,15 @@
-import { HydrateClient, api } from "~/trpc/server";
+import { HydrateClient, api } from '~/trpc/server';
 
-import Footer from "./_components/Footer";
-import Form from "./_components/Form";
-import Header from "./_components/Header";
-import Test from "./_components/test";
+import Footer from './_components/Footer';
+import Form from './_components/Form';
+import Header from './_components/Header';
+import Test from './_components/test';
 
 export default function Home() {
 	const res = api.room.showAllEmptyRooms({
-		day: "MONDAY",
-		startSlotTime: "FIRST",
-		endSlotTime: "SECOND",
+		day: 'MONDAY',
+		startSlotTime: 'FIRST',
+		endSlotTime: 'SECOND',
 	});
 
 	return (

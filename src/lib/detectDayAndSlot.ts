@@ -1,4 +1,4 @@
-import { DayNumEnumMap, slotTimesAA, slotTimesEng } from "./consts";
+import { DayNumEnumMap, slotTimesAA, slotTimesEng } from './consts';
 
 /**
  * Detect the current day and slot based on the current time.
@@ -7,8 +7,7 @@ import { DayNumEnumMap, slotTimesAA, slotTimesEng } from "./consts";
  */
 export function detectDayAndSlot({ isAA = false }: { isAA?: boolean }) {
 	const date = new Date();
-	const currentDay =
-		DayNumEnumMap[date.getDay() as keyof typeof DayNumEnumMap];
+	const currentDay = DayNumEnumMap[date.getDay() as keyof typeof DayNumEnumMap];
 	const currentHour = date.getHours();
 	const currentMinute = date.getMinutes();
 

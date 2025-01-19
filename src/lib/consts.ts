@@ -1,4 +1,4 @@
-import { Day, SlotTime } from "@prisma/client";
+import { Day, SlotTime } from '@prisma/client';
 
 export const DayNumEnumMap = {
 	0: Day.SUNDAY,
@@ -11,23 +11,23 @@ export const DayNumEnumMap = {
 };
 
 export const SlotOptions = [
-	{ label: "1st", value: SlotTime.FIRST },
-	{ label: "2nd", value: SlotTime.SECOND },
-	{ label: "3rd", value: SlotTime.THIRD },
-	{ label: "4th", value: SlotTime.FOURTH },
-	{ label: "5th", value: SlotTime.FIFTH },
-	{ label: "6th", value: SlotTime.SIXTH },
-	{ label: "7th", value: SlotTime.SEVENTH },
-	{ label: "8th", value: SlotTime.EIGHTH },
+	{ label: '1st', value: SlotTime.FIRST },
+	{ label: '2nd', value: SlotTime.SECOND },
+	{ label: '3rd', value: SlotTime.THIRD },
+	{ label: '4th', value: SlotTime.FOURTH },
+	{ label: '5th', value: SlotTime.FIFTH },
+	{ label: '6th', value: SlotTime.SIXTH },
+	{ label: '7th', value: SlotTime.SEVENTH },
+	{ label: '8th', value: SlotTime.EIGHTH },
 ] as const;
 
 export const DayOptions = [
-	{ label: "Saturday", value: Day.SATURDAY },
-	{ label: "Sunday", value: Day.SUNDAY },
-	{ label: "Monday", value: Day.MONDAY },
-	{ label: "Tuesday", value: Day.TUESDAY },
-	{ label: "Wednesday", value: Day.WEDNESDAY },
-	{ label: "Thursday", value: Day.THURSDAY },
+	{ label: 'Saturday', value: Day.SATURDAY },
+	{ label: 'Sunday', value: Day.SUNDAY },
+	{ label: 'Monday', value: Day.MONDAY },
+	{ label: 'Tuesday', value: Day.TUESDAY },
+	{ label: 'Wednesday', value: Day.WEDNESDAY },
+	{ label: 'Thursday', value: Day.THURSDAY },
 ] as const;
 
 export const slotTimesEng = [
