@@ -1,6 +1,7 @@
-import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
-import { roomRouter } from './routers/room';
-import { scraperRouter } from './routers/scraper';
+import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+
+import { roomRouter } from "./routers/room";
+import { scraperRouter } from "./routers/scraper";
 
 /**
  * This is the primary router for your server.

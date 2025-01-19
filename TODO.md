@@ -1,0 +1,1 @@
+- [ ] Call detect button on page render

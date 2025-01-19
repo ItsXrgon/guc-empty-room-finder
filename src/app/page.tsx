@@ -1,18 +1,27 @@
-import { api, HydrateClient } from '~/trpc/server';
-import Test from './_components/test';
+import { HydrateClient, api } from "~/trpc/server";
 
-export default async function Home() {
+import Footer from "./_components/Footer";
+import Form from "./_components/Form";
+import Header from "./_components/Header";
+import Test from "./_components/test";
+
+export default function Home() {
 	const res = api.room.showAllEmptyRooms({
-		day: 'MONDAY',
-		startSlotTime: 'FIRST',
-		endSlotTime: 'SECOND',
+		day: "MONDAY",
+		startSlotTime: "FIRST",
+		endSlotTime: "SECOND",
 	});
 
 	return (
 		<HydrateClient>
-			<main className="flex min-h-screen flex-col ">
-				<Test />
-			</main>
+			<div className="flex flex-col min-h-screen bg-background-default">
+				<Header />
+				<main className="flex-grow">
+					{/* <Test /> */}
+					<Form />
+				</main>
+				<Footer />
+			</div>
 		</HydrateClient>
 	);
 }

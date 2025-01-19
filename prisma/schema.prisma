@@ -50,10 +50,10 @@ model AreaEdge {
 }
 
 model Room {
-    id        Int      @id @default(autoincrement())
+    id        Int        @id @default(autoincrement())
     code      String
     areaId    Int
-    area      Area     @relation(fields: [areaId], references: [id])
+    area      Area       @relation(fields: [areaId], references: [id])
     slots     Slot[]
     tempSlots TempSlot[]
 
@@ -61,21 +61,31 @@ model Room {
 }
 
 model Slot {
-    id Int @id @default(autoincrement())
-    day Day
-    time SlotTime
+    id     Int      @id @default(autoincrement())
+    day    Day
+    time   SlotTime
     roomId Int
-    room Room @relation(fields: [roomId], references: [id])
+    room   Room     @relation(fields: [roomId], references: [id])
 
     @@index([day, time, roomId])
 }
 
 model TempSlot {
-    id Int @id @default(autoincrement())
-    day Day
-    time SlotTime
+    id     Int      @id @default(autoincrement())
+    day    Day
+    time   SlotTime
     roomId Int
-    room Room @relation(fields: [roomId], references: [id])
+    room   Room     @relation(fields: [roomId], references: [id])
 
     @@index([day, time, roomId])
+}
+
+model EmptyRoomCache {
+    id        Int      @id @default(autoincrement())
+    key       String // day-startTime-endTime
+    startTime SlotTime
+    endTime   SlotTime
+    roomIds   Int[]
+
+    @@index([key])
 }

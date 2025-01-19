@@ -1,5 +1,5 @@
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
 	server: {
@@ -14,8 +14,8 @@ export const env = createEnv({
 		PORTAL_USERNAME: z.string(),
 		PORTAL_PASSWORD: z.string(),
 		NODE_ENV: z
-			.enum(['development', 'test', 'production'])
-			.default('development'),
+			.enum(["development", "test", "production"])
+			.default("development"),
 	},
 	client: {},
 	runtimeEnv: {
