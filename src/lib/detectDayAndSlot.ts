@@ -1,4 +1,5 @@
-import { DayNumEnumMap, slotTimesAA, slotTimesEng } from './consts';
+import {  slotTimesAA, slotTimesEng } from './consts';
+import { DayNumEnumMap } from './mappers';
 
 /**
  * Detect the current day and slot based on the current time.

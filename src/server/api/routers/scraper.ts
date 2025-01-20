@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
-import { getSlots } from '~/server/scraper/scraper';
+import { loadSlots } from '~/server/scraper/scraper';
 
 export const scraperRouter = createTRPCRouter({
 	trigger: publicProcedure
@@ -10,7 +10,7 @@ export const scraperRouter = createTRPCRouter({
 				throw new Error('Unauthorized action.');
 			}
 			try {
-				await getSlots();
+				await loadSlots();
 			} catch (error) {
 				console.error(error);
 				throw new Error('Failed to trigger scraper.');

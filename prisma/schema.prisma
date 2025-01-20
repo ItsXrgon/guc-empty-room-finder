@@ -51,13 +51,13 @@ model AreaEdge {
 
 model Room {
     id        Int        @id @default(autoincrement())
-    code      String
+    name      String
     areaId    Int
     area      Area       @relation(fields: [areaId], references: [id])
     slots     Slot[]
     tempSlots TempSlot[]
 
-    @@index([code])
+    @@index([name])
 }
 
 model Slot {

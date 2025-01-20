@@ -1,13 +1,23 @@
+'use server';
+
 import puppeteer from 'puppeteer';
 
-import { beginConnection, endConnection } from './utils';
+import { getCourseOptions } from './getCourseOptions';
+import { getSlots } from './getSlots';
+import { loadCourseData } from './loadCourseData';
+import { beginConnection, endConnection, insertData } from './db';
 
-const OPEN_SELECT_SELECTOR = 'a.icon_link.add_link';
-const COURSE_SELECT_SELECTOR = 'select.select-box';
-const COURSE_SELECT_OPTIONS_SELECTOR = 'select.select-box option';
-const SHOW_BUTTON_SELECTOR = 'input.btn.btn-primary';
+const BATCH_SIZE = 10;
+let batchData: {
+	course: string;
+	schedule: {
+		day: string;
+		slot: number;
+		rooms: string[];
+	}[];
+}[] = [];
 
-export async function getSlots() {
+export async function loadSlots() {
 	if (!process.env.PORTAL_USERNAME || !process.env.PORTAL_PASSWORD) {
 		throw new Error('Portal credentials not found.');
 	}
@@ -15,17 +25,16 @@ export async function getSlots() {
 	beginConnection();
 
 	const browser = await puppeteer.launch({
-		headless: true,
+		headless: false,
 		defaultViewport: null,
 	});
-
-	// Open a new page
 	const page = await browser.newPage();
 
 	await page.authenticate({
 		username: process.env.PORTAL_USERNAME,
 		password: process.env.PORTAL_PASSWORD,
 	});
+
 	await page.goto(
 		'https://apps.guc.edu.eg/student_ext/Scheduling/SearchAcademicScheduled_001.aspx',
 		{
@@ -33,20 +42,25 @@ export async function getSlots() {
 		}
 	);
 
-	await page.click(OPEN_SELECT_SELECTOR);
-	await page.waitForSelector(COURSE_SELECT_SELECTOR);
-
-	const optionValues = await page.$$eval(
-		COURSE_SELECT_OPTIONS_SELECTOR,
-		(options) => options.map((option) => option.value)
-	);
+	// Extract option values from the course dropdown
+	const optionValues = await getCourseOptions(page);
 
 	for (const value of optionValues) {
-		await page.select(COURSE_SELECT_SELECTOR, value);
-		console.log(`Selected option with value: ${value}`);
+		await loadCourseData(page, value);
+		const tableData = await getSlots(page);
 
-		// await page.click(SHOW_BUTTON_SELECTOR);
+		batchData.push({ course: value, schedule: tableData });
+
+		if (batchData.length >= BATCH_SIZE) {
+			await insertData(batchData);
+			batchData = []; // Clear the batch
+		}
 	}
 
+	if (batchData.length > 0) {
+		await insertData(batchData);
+	}
+
+	await browser.close();
 	endConnection();
 }

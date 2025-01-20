@@ -3,8 +3,10 @@ import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
 export const roomRouter = createTRPCRouter({
-	showAllRooms: publicProcedure.query(({ ctx }) => {
-		return ctx.db.room.findMany();
+	showAllRooms: publicProcedure.query(async ({ ctx }) => {
+		const rooms = await ctx.db.room.findMany();
+
+		return rooms;
 	}),
 	showAllEmptyRooms: publicProcedure
 		.input(
@@ -14,7 +16,7 @@ export const roomRouter = createTRPCRouter({
 				endSlotTime: z.nativeEnum(SlotTime),
 			})
 		)
-		.query(({ input }) => {
+		.query(({}) => {
 			return 'Triggered!';
 		}),
 	showClosestEmptyRoom: publicProcedure
@@ -26,7 +28,7 @@ export const roomRouter = createTRPCRouter({
 				endSlotTime: z.nativeEnum(SlotTime),
 			})
 		)
-		.query(({ input }) => {
+		.query(({}) => {
 			return 'Triggered!';
 		}),
 	showRoomSchedule: publicProcedure
@@ -35,7 +37,7 @@ export const roomRouter = createTRPCRouter({
 				roomId: z.number(),
 			})
 		)
-		.query(({ input }) => {
+		.query(({}) => {
 			return 'Triggered!';
 		}),
 });
