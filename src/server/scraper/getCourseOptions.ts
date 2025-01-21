@@ -8,9 +8,14 @@ import {
 	CLOSE_SELECT_BUTTON,
 } from './selectors';
 
+/**
+ * Extracts the course options from the dropdown.
+ * @param page The puppeteer page object
+ * @returns
+ */
 export async function getCourseOptions(page: Page) {
 	await page.waitForSelector(OPEN_SELECT_SELECTOR);
-	
+
 	await page.click(OPEN_SELECT_SELECTOR);
 	await page.waitForSelector(COURSE_SELECT_SELECTOR);
 

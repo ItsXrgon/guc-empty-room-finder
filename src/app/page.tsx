@@ -3,6 +3,7 @@ import { HydrateClient } from '~/trpc/server';
 import Footer from './_components/Footer';
 import Form from './_components/Form';
 import Header from './_components/Header';
+import Test from './_components/test';
 
 export default function Home() {
 	return (
@@ -10,7 +11,7 @@ export default function Home() {
 			<div className="flex flex-col min-h-screen bg-background-default">
 				<Header />
 				<main className="flex-grow">
-					{/* <Test /> */}
+					<Test />
 					<Form />
 				</main>
 				<Footer />

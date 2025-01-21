@@ -6,19 +6,17 @@ import { getCourseOptions } from './getCourseOptions';
 import { getSlots } from './getSlots';
 import { loadCourseData } from './loadCourseData';
 import { beginConnection, endConnection, insertData } from './db';
+import { TBatchData } from './types';
+import { env } from '~/env';
 
 const BATCH_SIZE = 10;
-let batchData: {
-	course: string;
-	schedule: {
-		day: string;
-		slot: number;
-		rooms: string[];
-	}[];
-}[] = [];
+let batchData: TBatchData[] = [];
 
+/**
+ * Scrapes all the course schedules and inserts the occupied rooms into the database.
+ */
 export async function loadSlots() {
-	if (!process.env.PORTAL_USERNAME || !process.env.PORTAL_PASSWORD) {
+	if (!env.PORTAL_USERNAME || !env.PORTAL_PASSWORD) {
 		throw new Error('Portal credentials not found.');
 	}
 
@@ -31,8 +29,8 @@ export async function loadSlots() {
 	const page = await browser.newPage();
 
 	await page.authenticate({
-		username: process.env.PORTAL_USERNAME,
-		password: process.env.PORTAL_PASSWORD,
+		username: env.PORTAL_USERNAME,
+		password: env.PORTAL_PASSWORD,
 	});
 
 	await page.goto(

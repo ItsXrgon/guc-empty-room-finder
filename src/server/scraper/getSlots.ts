@@ -4,6 +4,10 @@ import { Page } from 'puppeteer';
 import { SCHEDULE_TABLE_SELECTOR } from './selectors';
 import { TScrapedTableCell, TScrapedDay, TScrapedSlot } from './types';
 
+/**
+ * Extracts the slots from the schedule table.
+ * @param page The puppeteer page object
+ */
 export async function getSlots(page: Page) {
 	const data = await page.evaluate((SCHEDULE_TABLE_SELECTOR) => {
 		const table = document.querySelector(SCHEDULE_TABLE_SELECTOR);

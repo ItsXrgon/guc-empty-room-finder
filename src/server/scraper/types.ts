@@ -6,3 +6,8 @@ export type TScrapedTableCell = {
 	slot: TScrapedSlot;
 	rooms: string[];
 };
+
+export type TBatchData = {
+	course: string;
+	schedule: TScrapedTableCell[];
+};

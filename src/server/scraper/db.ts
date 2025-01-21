@@ -1,32 +1,44 @@
 'use server';
 
 import { PrismaClient } from '@prisma/client';
-import { TScrapedTableCell } from './types';
+import { TBatchData } from './types';
 import { dayTextEnumMap, slotNumEnumMap } from '~/lib/mappers';
 
 const prisma = new PrismaClient();
 
+/**
+ * Begins the connection to the database.
+ */
 export async function beginConnection() {
 	await prisma.$connect();
 }
 
+/**
+ * Ends the connection to the database.
+ */
 export async function endConnection() {
 	await prisma.$disconnect();
 }
 
-export async function insertData(slots: TScrapedTableCell[]) {
+/**
+ * Loops through the courses provided and inserts their schedules to the database.
+ * @param courses schedule data to be inserted
+ */
+export async function insertData(courses: TBatchData[]) {
 	try {
-		slots?.forEach((slot) => {
-			const day = dayTextEnumMap[slot.day];
-			const time = slotNumEnumMap[slot.slot];
-			slot.rooms?.forEach(async (room) => {
-				const roomId = await insertNewRoom(room);
-				await prisma.tempSlot.create({
-					data: {
-						day,
-						time,
-						roomId,
-					},
+		courses?.forEach((course) => {
+			course?.schedule?.forEach((slot) => {
+				const day = dayTextEnumMap[slot.day];
+				const time = slotNumEnumMap[slot.slot];
+				slot.rooms?.forEach(async (room) => {
+					const roomId = await insertNewRoom(room);
+					await prisma.tempSlot.create({
+						data: {
+							day,
+							time,
+							roomId,
+						},
+					});
 				});
 			});
 		});
@@ -36,68 +48,91 @@ export async function insertData(slots: TScrapedTableCell[]) {
 }
 
 /**
- * Inserts a new room if doesnt exist. if does exist then return the id.
- * @param name name of the room
- * @returns
+ * Inserts a new room if it doesn't exist. If it does, returns the ID.
+ * @param name Name of the room
+ * @returns Room ID
  */
 async function insertNewRoom(name: string): Promise<number> {
 	try {
-		const storedRoom = await prisma.room.findFirst({
-			where: {
-				name: name,
-			},
-		});
-		if (storedRoom) {
-			// Room already exists
-			return storedRoom.id;
-		}
+		return await prisma.$transaction(async (prisma) => {
+			// Check if the room already exists
+			const storedRoom = await prisma.room.findFirst({
+				where: { name },
+			});
+			if (storedRoom) {
+				return storedRoom.id;
+			}
 
-		let area = 'Unspecified';
-		if (name.includes('.')) {
-			area = name.replace('.', '').slice(0, 3);
-		}
+			// Determine area
+			let area = 'Unspecified';
+			if (name.includes('.')) {
+				area = name.slice(0, 4);
+			}
 
-		const areaId = await insertNewArea(area);
-		const result = await prisma.room.create({
-			data: {
-				name,
-				areaId,
-			},
+			const areaId = await insertNewArea(area);
+			const result = await prisma.room.create({
+				data: {
+					name,
+					areaId,
+				},
+			});
+
+			return result.id;
 		});
-		return result.id;
-	} catch (error) {
+	} catch (error: unknown) {
+		// @ts-expect-error Error handling for duplicate entries
+		if (error?.code === 'P2002') {
+			const storedRoom = await prisma.room.findFirst({
+				where: { name },
+			});
+			if (storedRoom) {
+				return storedRoom.id;
+			}
+		}
 		throw error;
 	}
 }
 
 /**
- * Inserts a new area if doesnt exist. if does exist then return the id.
- * @param name name of the area
- * @returns
+ * Inserts a new area if it doesn't exist. If it does, returns the ID.
+ * @param name Name of the area
+ * @returns Area ID
  */
 async function insertNewArea(name: string): Promise<number> {
 	try {
-		const storedArea = await prisma.area.findFirst({
-			where: {
-				name: name,
-			},
-		});
-		if (storedArea) {
-			// Area already exists
-			return storedArea.id;
-		}
+		return await prisma.$transaction(async (prisma) => {
+			// Check if the area already exists
+			const storedArea = await prisma.area.findFirst({
+				where: { name },
+			});
+			if (storedArea) {
+				return storedArea.id;
+			}
 
-		const result = await prisma.area.create({
-			data: {
-				name,
-			},
+			// Create new area
+			const result = await prisma.area.create({
+				data: { name },
+			});
+
+			return result.id;
 		});
-		return result.id;
-	} catch (error) {
+	} catch (error: unknown) {
+		// @ts-expect-error Error handling for duplicate entries
+		if (error?.code === 'P2002') {
+			const storedRoom = await prisma.area.findFirst({
+				where: { name },
+			});
+			if (storedRoom) {
+				return storedRoom.id;
+			}
+		}
 		throw error;
 	}
 }
 
+/**
+ * Replaces the main table with the temp table. This is done to avoid downtime.
+ */
 export async function replaceMainTable() {
 	await prisma.$transaction(async (tx) => {
 		await tx.slot.deleteMany();

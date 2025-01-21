@@ -13,6 +13,8 @@ export const env = createEnv({
 		POSTGRES_PRISMA_URL: z.string().url(),
 		PORTAL_USERNAME: z.string(),
 		PORTAL_PASSWORD: z.string(),
+		VERCEL_URL: z.string(),
+		PORT: z.string(),
 		NODE_ENV: z
 			.enum(['development', 'test', 'production'])
 			.default('development'),
@@ -30,6 +32,8 @@ export const env = createEnv({
 		PORTAL_USERNAME: process.env.PORTAL_USERNAME,
 		PORTAL_PASSWORD: process.env.PORTAL_PASSWORD,
 		NODE_ENV: process.env.NODE_ENV,
+		VERCEL_URL: process.env.VERCEL_URL,
+		PORT: process.env.PORT,
 	},
 	skipValidation: false,
 	emptyStringAsUndefined: true,
