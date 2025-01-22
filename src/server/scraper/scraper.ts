@@ -27,6 +27,14 @@ export async function loadSlots() {
 
 		browser = await puppeteer.launch({
 			headless: env.NODE_ENV === 'production',
+			args:
+				env.NODE_ENV === 'production'
+					? ['--no-sandbox', '--disable-setuid-sandbox']
+					: [],
+			executablePath:
+				env.NODE_ENV === 'production'
+					? '/vercel/.cache/puppeteer/chrome-linux/chrome'
+					: undefined,
 			defaultViewport: null,
 			protocolTimeout: 1000000,
 		});

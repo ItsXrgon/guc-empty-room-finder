@@ -11,8 +11,6 @@
 		"db:push": "prisma db push",
 		"db:studio": "prisma studio",
 		"dev": "next dev --turbo",
-		"preinstall": "bun i puppeteer-core",
-		"postinstall": "prisma generate && npx puppeteer browsers install",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix",
 		"preview": "next build && next start",
