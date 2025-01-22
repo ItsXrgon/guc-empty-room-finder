@@ -14,6 +14,7 @@ export const env = createEnv({
 		PORTAL_USERNAME: z.string(),
 		PORTAL_PASSWORD: z.string(),
 		VERCEL_URL: z.string(),
+		CRON_SECRET: z.string(),
 		PORT: z.string(),
 		NODE_ENV: z
 			.enum(['development', 'test', 'production'])
@@ -33,6 +34,7 @@ export const env = createEnv({
 		PORTAL_PASSWORD: process.env.PORTAL_PASSWORD,
 		NODE_ENV: process.env.NODE_ENV,
 		VERCEL_URL: process.env.VERCEL_URL,
+		CRON_SECRET: process.env.CRON_SECRET,
 		PORT: process.env.PORT,
 	},
 	skipValidation: false,

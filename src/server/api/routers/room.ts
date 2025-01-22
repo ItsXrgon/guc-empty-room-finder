@@ -5,7 +5,6 @@ import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 export const roomRouter = createTRPCRouter({
 	showAllRooms: publicProcedure.query(async ({ ctx }) => {
 		const rooms = await ctx.db.room.findMany();
-
 		return rooms;
 	}),
 	showAllEmptyRooms: publicProcedure
@@ -16,8 +15,28 @@ export const roomRouter = createTRPCRouter({
 				endSlotTime: z.nativeEnum(SlotTime),
 			})
 		)
-		.query(({}) => {
-			return 'Triggered!';
+		.query(async ({ ctx, input }) => {
+			const { day, startSlotTime, endSlotTime } = input;
+
+			// Time slots between start and end
+			const slotTimes = Object.values(SlotTime).filter(
+				(time) => time >= startSlotTime && time <= endSlotTime
+			);
+
+			const rooms = await ctx.db.room.findMany({
+				where: {
+					slots: {
+						none: {
+							day: day,
+							time: {
+								in: slotTimes,
+							},
+						},
+					},
+				},
+			});
+
+			return rooms;
 		}),
 	showClosestEmptyRoom: publicProcedure
 		.input(

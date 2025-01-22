@@ -30,6 +30,11 @@ enum SlotTime {
     EIGHTH
 }
 
+model ScrapeTimestamp {
+    id        Int      @id @default(autoincrement())
+    timestamp DateTime @default(now())
+}
+
 model Area {
     id          Int        @id @default(autoincrement())
     name        String     @unique
@@ -47,6 +52,9 @@ model AreaEdge {
     fromArea   Area  @relation("FromAreaConnections", fields: [fromAreaId], references: [id])
     toArea     Area  @relation("ToAreaConnections", fields: [toAreaId], references: [id])
     distance   Float @default(1)
+
+    @@unique([fromAreaId, toAreaId])
+    @@index([fromAreaId])
 }
 
 model Room {
@@ -67,6 +75,7 @@ model Slot {
     roomId Int
     room   Room     @relation(fields: [roomId], references: [id])
 
+    @@unique([day, time, roomId])
     @@index([day, time, roomId])
 }
 
@@ -77,6 +86,7 @@ model TempSlot {
     roomId Int
     room   Room     @relation(fields: [roomId], references: [id])
 
+    @@unique([day, time, roomId])
     @@index([day, time, roomId])
 }
 

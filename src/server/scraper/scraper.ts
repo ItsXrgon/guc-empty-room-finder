@@ -1,16 +1,14 @@
 'use server';
 
 import puppeteer from 'puppeteer';
-
 import { getCourseOptions } from './getCourseOptions';
 import { getSlots } from './getSlots';
 import { loadCourseData } from './loadCourseData';
-import { beginConnection, endConnection, insertData } from './db';
+import { beginConnection, endConnection, processBatch } from './db';
 import { TBatchData } from './types';
 import { env } from '~/env';
 
-const BATCH_SIZE = 10;
-let batchData: TBatchData[] = [];
+const BATCH_SIZE = 15;
 
 /**
  * Scrapes all the course schedules and inserts the occupied rooms into the database.
@@ -20,45 +18,75 @@ export async function loadSlots() {
 		throw new Error('Portal credentials not found.');
 	}
 
-	beginConnection();
+	let browser;
+	let currentBatch: TBatchData[] = [];
+	const failedCourses: string[] = [];
 
-	const browser = await puppeteer.launch({
-		headless: false,
-		defaultViewport: null,
-	});
-	const page = await browser.newPage();
+	try {
+		beginConnection();
 
-	await page.authenticate({
-		username: env.PORTAL_USERNAME,
-		password: env.PORTAL_PASSWORD,
-	});
+		browser = await puppeteer.launch({
+			headless: env.NODE_ENV === 'production',
+			defaultViewport: null,
+			protocolTimeout: 1000000,
+		});
 
-	await page.goto(
-		'https://apps.guc.edu.eg/student_ext/Scheduling/SearchAcademicScheduled_001.aspx',
-		{
-			waitUntil: 'domcontentloaded',
+		const page = await browser.newPage();
+		await page.authenticate({
+			username: env.PORTAL_USERNAME,
+			password: env.PORTAL_PASSWORD,
+		});
+
+		await page.goto(
+			'https://apps.guc.edu.eg/student_ext/Scheduling/SearchAcademicScheduled_001.aspx',
+			{
+				waitUntil: 'domcontentloaded',
+				timeout: 30000,
+			}
+		);
+
+		const optionValues = await getCourseOptions(page);
+
+		for (const value of optionValues) {
+			try {
+				await loadCourseData(page, value);
+				const tableData = await getSlots(page);
+
+				if (!tableData || tableData.length > 0) {
+					continue;
+				}
+
+				currentBatch.push({ course: value, schedule: tableData });
+				if (currentBatch.length >= BATCH_SIZE) {
+					const success = await processBatch(currentBatch);
+					if (!success) {
+						failedCourses.push(...currentBatch.map((item) => item.course));
+					}
+					currentBatch = []; // Clear the batch regardless of success
+				}
+			} catch {
+				failedCourses.push(value);
+			}
 		}
-	);
 
-	// Extract option values from the course dropdown
-	const optionValues = await getCourseOptions(page);
+		// Process remaining items in the last batch
+		if (currentBatch.length > 0) {
+			const success = await processBatch(currentBatch);
+			if (!success) {
+				failedCourses.push(...currentBatch.map((item) => item.course));
+			}
+		}
+	} catch (error) {
+		console.error('Fatal error in loadSlots:', error);
+		throw error;
+	} finally {
+		if (browser) {
+			await browser.close();
+		}
+		endConnection();
 
-	for (const value of optionValues) {
-		await loadCourseData(page, value);
-		const tableData = await getSlots(page);
-
-		batchData.push({ course: value, schedule: tableData });
-
-		if (batchData.length >= BATCH_SIZE) {
-			await insertData(batchData);
-			batchData = []; // Clear the batch
+		if (failedCourses.length > 0) {
+			console.error('Failed to process the following courses:', failedCourses);
 		}
 	}
-
-	if (batchData.length > 0) {
-		await insertData(batchData);
-	}
-
-	await browser.close();
-	endConnection();
 }

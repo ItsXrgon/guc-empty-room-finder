@@ -4,6 +4,9 @@ import { PrismaClient } from '@prisma/client';
 import { TBatchData } from './types';
 import { dayTextEnumMap, slotNumEnumMap } from '~/lib/mappers';
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 seconds
+
 const prisma = new PrismaClient();
 
 /**
@@ -21,28 +24,85 @@ export async function endConnection() {
 }
 
 /**
+ * Processes a batch of data with retries
+ * @param batch Data batch to process
+ * @returns true if successful, false otherwise
+ */
+export async function processBatch(batch: TBatchData[]): Promise<boolean> {
+	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+		try {
+			await insertData(batch);
+			return true;
+		} catch {
+			if (attempt < MAX_RETRIES) {
+				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+			}
+		}
+	}
+	return false;
+}
+
+/**
  * Loops through the courses provided and inserts their schedules to the database.
  * @param courses schedule data to be inserted
  */
 export async function insertData(courses: TBatchData[]) {
+	if (!courses?.length) {
+		return;
+	}
+
 	try {
-		courses?.forEach((course) => {
-			course?.schedule?.forEach((slot) => {
+		// Process all courses sequentially
+		for (const course of courses) {
+			if (!course?.schedule?.length) {
+				continue;
+			}
+
+			// Process each schedule slot
+			for (const slot of course.schedule) {
+				if (!slot?.rooms?.length) {
+					continue;
+				}
+
 				const day = dayTextEnumMap[slot.day];
 				const time = slotNumEnumMap[slot.slot];
-				slot.rooms?.forEach(async (room) => {
-					const roomId = await insertNewRoom(room);
-					await prisma.tempSlot.create({
-						data: {
-							day,
-							time,
-							roomId,
-						},
-					});
-				});
-			});
-		});
+
+				// Process each room sequentially to avoid race conditions
+				for (const room of slot.rooms) {
+					try {
+						if (!room) {
+							continue;
+						}
+
+						const roomId = await insertRoom(room);
+
+						if (roomId == -1) {
+							continue;
+						}
+
+						await prisma.tempSlot.upsert({
+							where: {
+								day_time_roomId: {
+									day,
+									time,
+									roomId,
+								},
+							},
+							update: {},
+							create: {
+								day,
+								time,
+								roomId,
+							},
+						});
+					} catch (roomError) {
+						console.error('Error processing room:', room, roomError);
+					}
+				}
+			}
+		}
 	} catch (error) {
+		console.error('Error in insertData:', error);
 		throw error;
 	}
 }
@@ -50,83 +110,75 @@ export async function insertData(courses: TBatchData[]) {
 /**
  * Inserts a new room if it doesn't exist. If it does, returns the ID.
  * @param name Name of the room
- * @returns Room ID
+ * @returns Room ID or -1 if operation fails
  */
-async function insertNewRoom(name: string): Promise<number> {
+async function insertRoom(name: string): Promise<number> {
+	if (!name || typeof name !== 'string') {
+		return -1;
+	}
+
 	try {
-		return await prisma.$transaction(async (prisma) => {
-			// Check if the room already exists
-			const storedRoom = await prisma.room.findFirst({
-				where: { name },
-			});
-			if (storedRoom) {
-				return storedRoom.id;
-			}
-
-			// Determine area
-			let area = 'Unspecified';
-			if (name.includes('.')) {
-				area = name.slice(0, 4);
-			}
-
-			const areaId = await insertNewArea(area);
-			const result = await prisma.room.create({
-				data: {
-					name,
-					areaId,
-				},
-			});
-
-			return result.id;
+		// Try to find the room outside of transaction
+		const existingRoom = await prisma.room.findUnique({
+			where: { name },
 		});
-	} catch (error: unknown) {
-		// @ts-expect-error Error handling for duplicate entries
+
+		if (existingRoom) {
+			return existingRoom.id;
+		}
+
+		const area = await getRoomArea(name);
+
+		const areaId = await insertArea(area);
+		if (!areaId) {
+			return -1;
+		}
+
+		const room = await prisma.room.create({
+			data: {
+				name,
+				areaId,
+			},
+		});
+
+		return room.id;
+	} catch (error) {
+		// @ts-expect-error Duplicate room error
 		if (error?.code === 'P2002') {
-			const storedRoom = await prisma.room.findFirst({
+			// Handle unique constraint violation
+			const existingRoom = await prisma.room.findUnique({
 				where: { name },
 			});
-			if (storedRoom) {
-				return storedRoom.id;
+			if (existingRoom) {
+				return existingRoom.id;
 			}
 		}
-		throw error;
+		console.error('Error inserting room:', name, error);
+		return -1;
 	}
 }
 
 /**
  * Inserts a new area if it doesn't exist. If it does, returns the ID.
  * @param name Name of the area
- * @returns Area ID
+ * @returns Area ID or 0 if operation fails
  */
-async function insertNewArea(name: string): Promise<number> {
+async function insertArea(name: string): Promise<number> {
+	if (!name || typeof name !== 'string') {
+		return -1;
+	}
+
 	try {
-		return await prisma.$transaction(async (prisma) => {
-			// Check if the area already exists
-			const storedArea = await prisma.area.findFirst({
-				where: { name },
-			});
-			if (storedArea) {
-				return storedArea.id;
-			}
-
-			// Create new area
-			const result = await prisma.area.create({
-				data: { name },
-			});
-
-			return result.id;
+		const result = await prisma.area.upsert({
+			where: { name },
+			update: {},
+			create: { name },
 		});
-	} catch (error: unknown) {
-		// @ts-expect-error Error handling for duplicate entries
-		if (error?.code === 'P2002') {
-			const storedRoom = await prisma.area.findFirst({
-				where: { name },
-			});
-			if (storedRoom) {
-				return storedRoom.id;
-			}
-		}
-		throw error;
+
+		return result.id;
+	} catch (error) {
+		console.error('Error inserting area:', name, error);
+		return -1;
 	}
 }
 
@@ -144,4 +196,12 @@ export async function replaceMainTable() {
 
 		await tx.tempSlot.deleteMany();
 	});
+}
+
+export async function getRoomArea(room: string) {
+	if (room.includes('.')) {
+		return room.slice(0, 4);
+	} else {
+		return 'Unspecified';
+	}
 }

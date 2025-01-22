@@ -20,5 +20,5 @@ export async function loadCourseData(page: Page, value: string) {
 
 	await page.waitForSelector(SHOW_BUTTON_SELECTOR);
 	await page.click(SHOW_BUTTON_SELECTOR);
-	await page.waitForNavigation();
+	await page.waitForNavigation({ timeout: 300000 });
 }
