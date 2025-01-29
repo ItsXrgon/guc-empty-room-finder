@@ -1,8 +1,9 @@
-'use server';
+"use server";
 
-import { Page } from 'puppeteer';
-import { SCHEDULE_TABLE_SELECTOR } from './selectors';
-import { TScrapedTableCell, TScrapedDay, TScrapedSlot } from './types';
+import { Page } from "puppeteer-core";
+
+import { SCHEDULE_TABLE_SELECTOR } from "./selectors";
+import { TScrapedDay, TScrapedSlot, TScrapedTableCell } from "./types";
 
 /**
  * Extracts the slots from the schedule table.
@@ -15,19 +16,21 @@ export async function getSlots(page: Page) {
 
 		const result: TScrapedTableCell[] = [];
 
-		const rows = table.querySelectorAll('tbody tr');
+		const rows = table.querySelectorAll("tbody tr");
 
 		// Iterate over rows (starting from 1 to skip the header row)
 		rows.forEach((row) => {
-			const day = row.querySelector('th')?.textContent?.trim() as TScrapedDay;
-			const cells = row.querySelectorAll('td');
+			const day = row
+				.querySelector("th")
+				?.textContent?.trim() as TScrapedDay;
+			const cells = row.querySelectorAll("td");
 
 			// Iterate over cells
 			cells.forEach((cell, cellIndex) => {
 				const slotContent = cell.innerHTML.trim(); // Content of the cell
 				const slotNumber = (cellIndex + 1) as TScrapedSlot; // Slot number based on column index
 
-				if (slotContent === '&nbsp;') {
+				if (slotContent === "&nbsp;") {
 					// if Slot is empty
 					return;
 				}
@@ -35,10 +38,11 @@ export async function getSlots(page: Page) {
 				const locations: string[] = []; // locations occupied
 				let match;
 
-				const locationRegex = /<dt>\s*Location\s*<\/dt>\s*<dd>(.*?)<\/dd>/g;
+				const locationRegex =
+					/<dt>\s*Location\s*<\/dt>\s*<dd>(.*?)<\/dd>/g;
 
 				while ((match = locationRegex.exec(slotContent)) !== null) {
-					locations.push(match?.[1]?.trim() ?? '');
+					locations.push(match?.[1]?.trim() ?? "");
 				}
 
 				result.push({

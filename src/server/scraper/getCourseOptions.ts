@@ -1,12 +1,13 @@
-'use server';
+"use server";
 
-import { Page } from 'puppeteer';
+import { Page } from "puppeteer-core";
+
 import {
-	OPEN_SELECT_SELECTOR,
-	COURSE_SELECT_SELECTOR,
-	COURSE_SELECT_OPTIONS_SELECTOR,
 	CLOSE_SELECT_BUTTON,
-} from './selectors';
+	COURSE_SELECT_OPTIONS_SELECTOR,
+	COURSE_SELECT_SELECTOR,
+	OPEN_SELECT_SELECTOR,
+} from "./selectors";
 
 /**
  * Extracts the course options from the dropdown.
@@ -14,15 +15,15 @@ import {
  * @returns
  */
 export async function getCourseOptions(page: Page) {
-	await page.waitForSelector(OPEN_SELECT_SELECTOR);
+	await page.waitForSelector(OPEN_SELECT_SELECTOR, { timeout: 60000 });
 
 	await page.click(OPEN_SELECT_SELECTOR);
-	await page.waitForSelector(COURSE_SELECT_SELECTOR);
+	await page.waitForSelector(COURSE_SELECT_SELECTOR, { timeout: 60000 });
 
 	// Extract option values from the course dropdown
 	const optionValues = await page.$$eval(
 		COURSE_SELECT_OPTIONS_SELECTOR,
-		(options) => options.map((option) => option.value)
+		(options) => options.map((option) => option.value),
 	);
 	await page.click(CLOSE_SELECT_BUTTON);
 

@@ -1,12 +1,20 @@
-'use server';
+"use server";
 
-import puppeteer from 'puppeteer';
-import { getCourseOptions } from './getCourseOptions';
-import { getSlots } from './getSlots';
-import { loadCourseData } from './loadCourseData';
-import { beginConnection, endConnection, processBatch } from './db';
-import { TBatchData } from './types';
-import { env } from '~/env';
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
+import { env } from "~/env";
+
+
+
+import { beginConnection, endConnection, processBatch } from "./db";
+import { getCourseOptions } from "./getCourseOptions";
+import { getSlots } from "./getSlots";
+import { loadCourseData } from "./loadCourseData";
+import { TBatchData } from "./types";
+
+
+
+
 
 const BATCH_SIZE = 15;
 
@@ -15,7 +23,7 @@ const BATCH_SIZE = 15;
  */
 export async function loadSlots() {
 	if (!env.PORTAL_USERNAME || !env.PORTAL_PASSWORD) {
-		throw new Error('Portal credentials not found.');
+		throw new Error("Portal credentials not found.");
 	}
 
 	let browser;
@@ -24,19 +32,15 @@ export async function loadSlots() {
 
 	try {
 		beginConnection();
+		const isVercel = process.env.VERCEL === "1";
+		const executablePath = isVercel
+			? await chromium.executablePath()
+			: process.env.LOCAL_CHROME_PATH;
 
 		browser = await puppeteer.launch({
-			headless: env.NODE_ENV === 'production',
-			args:
-				env.NODE_ENV === 'production'
-					? ['--no-sandbox', '--disable-setuid-sandbox']
-					: [],
-			executablePath:
-				env.NODE_ENV === 'production'
-					? '/vercel/.cache/puppeteer/chrome-linux/chrome'
-					: undefined,
-			defaultViewport: null,
-			protocolTimeout: 1000000,
+			args: chromium.args,
+			executablePath: executablePath,
+			headless: chromium.headless,
 		});
 
 		const page = await browser.newPage();
@@ -46,16 +50,17 @@ export async function loadSlots() {
 		});
 
 		await page.goto(
-			'https://apps.guc.edu.eg/student_ext/Scheduling/SearchAcademicScheduled_001.aspx',
+			"https://apps.guc.edu.eg/student_ext/Scheduling/SearchAcademicScheduled_001.aspx",
 			{
-				waitUntil: 'domcontentloaded',
+				waitUntil: "domcontentloaded",
 				timeout: 30000,
-			}
+			},
 		);
 
 		const optionValues = await getCourseOptions(page);
 
 		for (const value of optionValues) {
+			console.log("Processing course:", value);
 			try {
 				await loadCourseData(page, value);
 				const tableData = await getSlots(page);
@@ -68,7 +73,9 @@ export async function loadSlots() {
 				if (currentBatch.length >= BATCH_SIZE) {
 					const success = await processBatch(currentBatch);
 					if (!success) {
-						failedCourses.push(...currentBatch.map((item) => item.course));
+						failedCourses.push(
+							...currentBatch.map((item) => item.course),
+						);
 					}
 					currentBatch = []; // Clear the batch regardless of success
 				}
@@ -85,7 +92,7 @@ export async function loadSlots() {
 			}
 		}
 	} catch (error) {
-		console.error('Fatal error in loadSlots:', error);
+		console.error("Fatal error in loadSlots:", error);
 		throw error;
 	} finally {
 		if (browser) {
@@ -94,7 +101,10 @@ export async function loadSlots() {
 		endConnection();
 
 		if (failedCourses.length > 0) {
-			console.error('Failed to process the following courses:', failedCourses);
+			console.error(
+				"Failed to process the following courses:",
+				failedCourses,
+			);
 		}
 	}
 }

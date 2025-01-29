@@ -5,7 +5,7 @@ import { loadSlots } from '~/server/scraper/scraper';
 export const scraperRouter = createTRPCRouter({
 	trigger: publicProcedure.query(async () => {
 		try {
-			await loadSlots();
+			loadSlots();
 			return { success: true, message: 'Scraper triggered successfully' };
 		} catch (error) {
 			console.error('Scraper error:', error);
