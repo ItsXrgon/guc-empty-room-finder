@@ -1,7 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 
 import RoomSelect from "./RoomSelect";
 
 export default function RoomsForm() {
-	return <RoomSelect />;
+	return (
+		<Suspense>
+			<RoomSelect />
+		</Suspense>
+	);
 }
