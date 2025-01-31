@@ -11,10 +11,7 @@ export const env = createEnv({
 		POSTGRES_DATABASE: z.string(),
 		POSTGRES_URL_NO_SSL: z.string().url(),
 		POSTGRES_PRISMA_URL: z.string().url(),
-		PORTAL_USERNAME: z.string(),
-		PORTAL_PASSWORD: z.string(),
 		VERCEL_URL: z.string(),
-		CRON_SECRET: z.string(),
 		PORT: z.string(),
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
@@ -36,11 +33,8 @@ export const env = createEnv({
 		POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
 		POSTGRES_URL_NO_SSL: process.env.POSTGRES_URL_NO_SSL,
 		POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
-		PORTAL_USERNAME: process.env.PORTAL_USERNAME,
-		PORTAL_PASSWORD: process.env.PORTAL_PASSWORD,
 		NODE_ENV: process.env.NODE_ENV,
 		VERCEL_URL: process.env.VERCEL_URL,
-		CRON_SECRET: process.env.CRON_SECRET,
 		PORT: process.env.PORT,
 		NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
 		NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,

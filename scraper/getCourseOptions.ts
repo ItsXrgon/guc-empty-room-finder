@@ -1,6 +1,4 @@
-"use server";
-
-import { Page } from "puppeteer-core";
+import { Page } from "puppeteer";
 
 import {
 	CLOSE_SELECT_BUTTON,

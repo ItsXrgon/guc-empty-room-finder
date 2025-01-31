@@ -1,8 +1,4 @@
-"use server";
-
-import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
-import { env } from "~/env";
+import puppeteer from "puppeteer";
 
 import { beginConnection, endConnection, processBatch } from "./db";
 import { getCourseOptions } from "./getCourseOptions";
@@ -10,13 +6,13 @@ import { getSlots } from "./getSlots";
 import { loadCourseData } from "./loadCourseData";
 import { TBatchData } from "./types";
 
-const BATCH_SIZE = 15;
+const BATCH_SIZE = 5;
 
 /**
  * Scrapes all the course schedules and inserts the occupied rooms into the database.
  */
-export async function loadSlots() {
-	if (!env.PORTAL_USERNAME || !env.PORTAL_PASSWORD) {
+export async function scraper() {
+	if (!process.env.PORTAL_USERNAME || !process.env.PORTAL_PASSWORD) {
 		throw new Error("Portal credentials not found.");
 	}
 
@@ -26,21 +22,16 @@ export async function loadSlots() {
 
 	try {
 		beginConnection();
-		const isVercel = process.env.VERCEL === "1";
-		const executablePath = isVercel
-			? await chromium.executablePath()
-			: process.env.LOCAL_CHROME_PATH;
-
 		browser = await puppeteer.launch({
-			args: chromium.args,
-			executablePath: executablePath,
-			headless: chromium.headless,
+			headless: process.env.NODE_ENV === "production",
+			defaultViewport: null,
+			protocolTimeout: 1000000,
 		});
 
 		const page = await browser.newPage();
 		await page.authenticate({
-			username: env.PORTAL_USERNAME,
-			password: env.PORTAL_PASSWORD,
+			username: process.env.PORTAL_USERNAME,
+			password: process.env.PORTAL_PASSWORD,
 		});
 
 		await page.goto(

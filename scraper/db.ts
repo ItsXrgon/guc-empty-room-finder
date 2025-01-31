@@ -1,8 +1,6 @@
-"use server";
-
 import { PrismaClient } from "@prisma/client";
-import { dayTextEnumMap, slotNumEnumMap } from "~/lib/mappers";
 
+import { dayTextEnumMap, slotNumEnumMap } from "./mappers";
 import { TBatchData } from "./types";
 
 const MAX_RETRIES = 3;
@@ -57,10 +55,10 @@ export async function insertData(courses: TBatchData[]) {
 	try {
 		// Process all courses sequentially
 		for (const course of courses) {
+			console.log(course);
 			if (!course?.schedule?.length) {
 				continue;
 			}
-
 			// Process each schedule slot
 			for (const slot of course.schedule) {
 				if (!slot?.rooms?.length) {
@@ -125,24 +123,17 @@ async function insertRoom(name: string): Promise<number> {
 	}
 
 	try {
-		// Try to find the room outside of transaction
-		const existingRoom = await prisma.room.findUnique({
-			where: { name },
-		});
-
-		if (existingRoom) {
-			return existingRoom.id;
-		}
-
 		const area = await getRoomArea(name);
-
 		const areaId = await insertArea(area);
-		if (!areaId) {
+
+		if (areaId === -1) {
 			return -1;
 		}
 
-		const room = await prisma.room.create({
-			data: {
+		const room = await prisma.room.upsert({
+			where: { name },
+			update: {}, // No update needed if the room already exists
+			create: {
 				name,
 				areaId,
 			},
@@ -150,16 +141,6 @@ async function insertRoom(name: string): Promise<number> {
 
 		return room.id;
 	} catch (error) {
-		// @ts-expect-error Duplicate room error
-		if (error?.code === "P2002") {
-			// Handle unique constraint violation
-			const existingRoom = await prisma.room.findUnique({
-				where: { name },
-			});
-			if (existingRoom) {
-				return existingRoom.id;
-			}
-		}
 		console.error("Error inserting room:", name, error);
 		return -1;
 	}

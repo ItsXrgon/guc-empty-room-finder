@@ -1,6 +1,4 @@
-"use server";
-
-import { Page } from "puppeteer-core";
+import { Page } from "puppeteer";
 
 import {
 	COURSE_SELECT_SELECTOR,

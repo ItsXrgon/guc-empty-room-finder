@@ -1,6 +1,4 @@
-"use server";
-
-import { Page } from "puppeteer-core";
+import { Page } from "puppeteer";
 
 import { SCHEDULE_TABLE_SELECTOR } from "./selectors";
 import { TScrapedDay, TScrapedSlot, TScrapedTableCell } from "./types";
@@ -38,6 +36,7 @@ export async function getSlots(page: Page) {
 				const locations: string[] = []; // locations occupied
 				let match;
 
+				// Regex to extract locations from the cell content
 				const locationRegex =
 					/<dt>\s*Location\s*<\/dt>\s*<dd>(.*?)<\/dd>/g;
 
