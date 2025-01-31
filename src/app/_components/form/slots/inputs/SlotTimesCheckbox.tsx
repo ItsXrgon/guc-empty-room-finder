@@ -13,12 +13,12 @@ export default function SlotTimesCheckbox() {
 
 	const handleCheckboxChange = useCallback(() => {
 		const queryParams = new URLSearchParams(searchParams);
-		const isChecked = queryParams.get("isAA");
+		const isChecked = queryParams.get(SearchParams.isAA);
 
 		if (isChecked) {
-			queryParams.delete("isAA");
+			queryParams.delete(SearchParams.isAA);
 		} else {
-			queryParams.set("isAA", "1");
+			queryParams.set(SearchParams.isAA, "1");
 		}
 
 		const search = queryParams.toString();
