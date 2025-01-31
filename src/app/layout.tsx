@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/react";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+import { Suspense } from "react";
 import "~/styles/globals.css";
 import { TRPCReactProvider } from "~/trpc/react";
 import { HydrateClient } from "~/trpc/server";
@@ -25,7 +26,7 @@ export default function RootLayout({
 						<Header />
 						<div className="flex flex-col min-h-screen bg-background-default">
 							<main className="flex-grow flex justify-center w-screen p-2">
-								{children}
+								<Suspense>{children}</Suspense>
 							</main>
 						</div>
 						<Footer />
