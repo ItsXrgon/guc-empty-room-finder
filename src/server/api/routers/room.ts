@@ -7,6 +7,33 @@ export const roomRouter = createTRPCRouter({
 		const rooms = await ctx.db.room.findMany();
 		return rooms;
 	}),
+	showAllRoomsByArea: publicProcedure.query(async ({ ctx }) => {
+		const rooms = await ctx.db.room.findMany({
+			include: {
+				area: true,
+			},
+		});
+
+		const groupedRooms = rooms.reduce(
+			(acc, room) => {
+				const areaId = room.areaId;
+				if (!acc[areaId]) {
+					acc[areaId] = {
+						area: room.area,
+						rooms: [],
+					};
+				}
+				acc[areaId].rooms.push(room);
+				return acc;
+			},
+			{} as Record<
+				string,
+				{ area: (typeof rooms)[0]["area"]; rooms: typeof rooms }
+			>,
+		);
+
+		return Object.values(groupedRooms);
+	}),
 	showAllEmptyRooms: publicProcedure
 		.input(
 			z.object({

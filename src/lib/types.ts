@@ -1,5 +1,7 @@
 export enum SearchParams {
-	EndSlot = 'end_slot',
-	StartSlot = 'start_slot',
-	Day = 'day',
+	EndSlot = "end_slot",
+	StartSlot = "start_slot",
+	Day = "day",
+	isAA = "isAA",
+	Room = "room",
 }

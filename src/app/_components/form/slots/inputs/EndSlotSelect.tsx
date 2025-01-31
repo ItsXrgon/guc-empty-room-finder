@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { SlotTime } from '@prisma/client';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useCallback, useMemo } from 'react';
-import { Label } from '~/components/ui/label';
+import { SlotTime } from "@prisma/client";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useCallback, useMemo } from "react";
+import { Label } from "~/components/ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '~/components/ui/select';
-import { SlotOptions } from '~/lib/consts';
-import { SearchParams } from '~/lib/types';
+} from "~/components/ui/select";
+import { SlotOptions } from "~/lib/consts";
+import { SearchParams } from "~/lib/types";
 
 export default function EndSlotSelect() {
 	const router = useRouter();
@@ -25,15 +25,16 @@ export default function EndSlotSelect() {
 			queryParams.set(SearchParams.EndSlot, slot);
 
 			const search = queryParams.toString();
-			const query = search ? `?${search}` : '';
+			const query = search ? `?${search}` : "";
 			router.push(`${pathname}${query}`);
 		},
-		[pathname, router, searchParams]
+		[pathname, router, searchParams],
 	);
 
 	const selectedStartSlotIndex = useMemo(() => {
 		const startSlotIdx = SlotOptions.findIndex(
-			(option) => option.value === searchParams?.get(SearchParams.StartSlot)
+			(option) =>
+				option.value === searchParams?.get(SearchParams.StartSlot),
 		);
 		if (startSlotIdx === -1) {
 			return null;
@@ -46,14 +47,20 @@ export default function EndSlotSelect() {
 			<Label variant="md">Select end slot</Label>
 			<Select
 				onValueChange={(value) => handleSlotSelect(value as SlotTime)}
-				value={searchParams?.get(SearchParams.EndSlot) as SlotTime}
+				value={
+					(searchParams?.get(SearchParams.EndSlot) as SlotTime)
+						? (searchParams?.get(SearchParams.EndSlot) as SlotTime)
+						: undefined
+				}
 			>
 				<SelectTrigger>
 					<SelectValue placeholder="Select a end slot" />
 				</SelectTrigger>
 				<SelectContent>
 					{SlotOptions.filter((_, index) =>
-						selectedStartSlotIndex ? index >= selectedStartSlotIndex : true
+						selectedStartSlotIndex
+							? index >= selectedStartSlotIndex
+							: true,
 					).map((option) => (
 						<SelectItem key={option.value} value={option.value}>
 							{option.label}

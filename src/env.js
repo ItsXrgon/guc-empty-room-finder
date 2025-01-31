@@ -1,5 +1,9 @@
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
+
+
+
+
 
 export const env = createEnv({
 	server: {
@@ -17,10 +21,16 @@ export const env = createEnv({
 		CRON_SECRET: z.string(),
 		PORT: z.string(),
 		NODE_ENV: z
-			.enum(['development', 'test', 'production'])
-			.default('development'),
+			.enum(["development", "test", "production"])
+			.default("development"),
 	},
-	client: {},
+	client: {
+		NEXT_PUBLIC_NODE_ENV: z
+			.enum(["development", "test", "production"])
+			.default("development"),
+		NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
+		NEXT_PUBLIC_PORT: z.string().optional(),
+	},
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
 		POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING,
@@ -36,6 +46,9 @@ export const env = createEnv({
 		VERCEL_URL: process.env.VERCEL_URL,
 		CRON_SECRET: process.env.CRON_SECRET,
 		PORT: process.env.PORT,
+		NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
+		NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+		NEXT_PUBLIC_PORT: process.env.NEXT_PUBLIC_PORT,
 	},
 	skipValidation: false,
 	emptyStringAsUndefined: true,
