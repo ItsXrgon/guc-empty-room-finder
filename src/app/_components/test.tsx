@@ -1,4 +1,4 @@
-import { createCaller } from '~/server/api/root';
+import { createCaller } from "~/server/api/root";
 
 export default async function Test() {
 	const caller = createCaller();

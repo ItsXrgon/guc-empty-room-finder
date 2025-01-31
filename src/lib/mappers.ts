@@ -1,4 +1,4 @@
-import { Day, SlotTime } from '@prisma/client';
+import { Day, SlotTime } from "@prisma/client";
 
 export const DayNumEnumMap = {
 	0: Day.SUNDAY,

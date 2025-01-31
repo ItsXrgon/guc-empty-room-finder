@@ -1,8 +1,9 @@
-'use server';
+"use server";
 
-import { PrismaClient } from '@prisma/client';
-import { TBatchData } from './types';
-import { dayTextEnumMap, slotNumEnumMap } from '~/lib/mappers';
+import { PrismaClient } from "@prisma/client";
+import { dayTextEnumMap, slotNumEnumMap } from "~/lib/mappers";
+
+import { TBatchData } from "./types";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000; // 2 seconds
@@ -35,7 +36,9 @@ export async function processBatch(batch: TBatchData[]): Promise<boolean> {
 			return true;
 		} catch {
 			if (attempt < MAX_RETRIES) {
-				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+				await new Promise((resolve) =>
+					setTimeout(resolve, RETRY_DELAY),
+				);
 			}
 		}
 	}
@@ -96,13 +99,17 @@ export async function insertData(courses: TBatchData[]) {
 							},
 						});
 					} catch (roomError) {
-						console.error('Error processing room:', room, roomError);
+						console.error(
+							"Error processing room:",
+							room,
+							roomError,
+						);
 					}
 				}
 			}
 		}
 	} catch (error) {
-		console.error('Error in insertData:', error);
+		console.error("Error in insertData:", error);
 		throw error;
 	}
 }
@@ -113,7 +120,7 @@ export async function insertData(courses: TBatchData[]) {
  * @returns Room ID or -1 if operation fails
  */
 async function insertRoom(name: string): Promise<number> {
-	if (!name || typeof name !== 'string') {
+	if (!name || typeof name !== "string") {
 		return -1;
 	}
 
@@ -144,7 +151,7 @@ async function insertRoom(name: string): Promise<number> {
 		return room.id;
 	} catch (error) {
 		// @ts-expect-error Duplicate room error
-		if (error?.code === 'P2002') {
+		if (error?.code === "P2002") {
 			// Handle unique constraint violation
 			const existingRoom = await prisma.room.findUnique({
 				where: { name },
@@ -153,7 +160,7 @@ async function insertRoom(name: string): Promise<number> {
 				return existingRoom.id;
 			}
 		}
-		console.error('Error inserting room:', name, error);
+		console.error("Error inserting room:", name, error);
 		return -1;
 	}
 }
@@ -164,7 +171,7 @@ async function insertRoom(name: string): Promise<number> {
  * @returns Area ID or 0 if operation fails
  */
 async function insertArea(name: string): Promise<number> {
-	if (!name || typeof name !== 'string') {
+	if (!name || typeof name !== "string") {
 		return -1;
 	}
 
@@ -177,7 +184,7 @@ async function insertArea(name: string): Promise<number> {
 
 		return result.id;
 	} catch (error) {
-		console.error('Error inserting area:', name, error);
+		console.error("Error inserting area:", name, error);
 		return -1;
 	}
 }
@@ -199,9 +206,9 @@ export async function replaceMainTable() {
 }
 
 export async function getRoomArea(room: string) {
-	if (room.includes('.')) {
+	if (room.includes(".")) {
 		return room.slice(0, 4);
 	} else {
-		return 'Unspecified';
+		return "Unspecified";
 	}
 }

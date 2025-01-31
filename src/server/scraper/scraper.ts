@@ -4,17 +4,11 @@ import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { env } from "~/env";
 
-
-
 import { beginConnection, endConnection, processBatch } from "./db";
 import { getCourseOptions } from "./getCourseOptions";
 import { getSlots } from "./getSlots";
 import { loadCourseData } from "./loadCourseData";
 import { TBatchData } from "./types";
-
-
-
-
 
 const BATCH_SIZE = 15;
 

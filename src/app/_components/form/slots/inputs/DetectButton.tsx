@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useCallback } from 'react';
-import { Button } from '~/components/ui/button';
-import { SlotOptions } from '~/lib/consts';
-import { detectDayAndSlot } from '~/lib/detectDayAndSlot';
-import { SearchParams } from '~/lib/types';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useCallback } from "react";
+import { Button } from "~/components/ui/button";
+import { SlotOptions } from "~/lib/consts";
+import { detectDayAndSlot } from "~/lib/detectDayAndSlot";
+import { SearchParams } from "~/lib/types";
 
 export default function DetectButton() {
 	const router = useRouter();
@@ -14,7 +14,7 @@ export default function DetectButton() {
 
 	const handleDetect = useCallback(() => {
 		const { day, slot } = detectDayAndSlot({
-			isAA: false,
+			isAA: searchParams.get(SearchParams.isAA) === "1",
 		});
 
 		if (slot && day !== undefined) {
@@ -24,10 +24,11 @@ export default function DetectButton() {
 
 			if (queryParams.get(SearchParams.EndSlot)) {
 				const endSlotIndex = SlotOptions.findIndex(
-					(option) => option.value === queryParams.get(SearchParams.EndSlot)
+					(option) =>
+						option.value === queryParams.get(SearchParams.EndSlot),
 				);
 				const startSlotIndex = SlotOptions.findIndex(
-					(option) => option.value === slot
+					(option) => option.value === slot,
 				);
 				if (startSlotIndex > endSlotIndex) {
 					queryParams.delete(SearchParams.EndSlot);
@@ -35,7 +36,7 @@ export default function DetectButton() {
 			}
 
 			const search = queryParams.toString();
-			const query = search ? `?${search}` : '';
+			const query = search ? `?${search}` : "";
 
 			router.push(`${pathname}${query}`);
 		}

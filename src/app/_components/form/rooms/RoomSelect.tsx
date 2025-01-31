@@ -29,10 +29,7 @@ export default function RoomSelect() {
 		return (
 			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
-					<Button
-						variant="outline"
-						className="w-full justify-start"
-					>
+					<Button variant="outline" className="w-full justify-start">
 						{searchParams?.get(SearchParams.Room) ? (
 							<>{searchParams?.get(SearchParams.Room)}</>
 						) : (
