@@ -1,10 +1,4 @@
 {
-	"functions": {
-		"src/server/scraper/scraper.ts": {
-			"memory": 3008,
-			"maxDuration": 30
-		}
-	},
 	"crons": [
 		{
 			"path": "/api/cron",
