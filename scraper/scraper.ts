@@ -1,12 +1,17 @@
 import puppeteer from "puppeteer";
 
-import { beginConnection, endConnection, processBatch } from "./db";
+import {
+	beginConnection,
+	endConnection,
+	processBatch,
+	replaceMainTable,
+} from "./db";
 import { getCourseOptions } from "./getCourseOptions";
 import { getSlots } from "./getSlots";
 import { loadCourseData } from "./loadCourseData";
 import { TBatchData } from "./types";
 
-const BATCH_SIZE = 5;
+const BATCH_SIZE = 15;
 
 /**
  * Scrapes all the course schedules and inserts the occupied rooms into the database.
@@ -45,12 +50,10 @@ export async function scraper() {
 		const optionValues = await getCourseOptions(page);
 
 		for (const value of optionValues) {
-			console.log("Processing course:", value);
 			try {
 				await loadCourseData(page, value);
 				const tableData = await getSlots(page);
-
-				if (!tableData || tableData.length > 0) {
+				if (!tableData || tableData.length === 0) {
 					continue;
 				}
 
@@ -83,6 +86,7 @@ export async function scraper() {
 		if (browser) {
 			await browser.close();
 		}
+		await replaceMainTable();
 		endConnection();
 
 		if (failedCourses.length > 0) {

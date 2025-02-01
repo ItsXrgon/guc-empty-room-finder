@@ -18,6 +18,7 @@ export const DayOptions = [
 	{ label: "Tuesday", value: Day.TUESDAY },
 	{ label: "Wednesday", value: Day.WEDNESDAY },
 	{ label: "Thursday", value: Day.THURSDAY },
+	{ label: "Friday", value: Day.FRIDAY },
 ] as const;
 
 export const slotTimesEng = [
@@ -76,7 +77,7 @@ export const slotTimesEng = [
 			minute: 15,
 		},
 	},
-];
+] as const;
 
 export const slotTimesAA = [
 	{
@@ -134,4 +135,4 @@ export const slotTimesAA = [
 			minute: 15,
 		},
 	},
-];
+] as const;

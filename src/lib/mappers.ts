@@ -6,6 +6,6 @@ export const DayNumEnumMap = {
 	2: Day.TUESDAY,
 	3: Day.WEDNESDAY,
 	4: Day.THURSDAY,
-	5: Day.SATURDAY, // Friday is off
+	5: Day.FRIDAY,
 	6: Day.SATURDAY,
 };

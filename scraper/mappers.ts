@@ -7,6 +7,7 @@ export const dayTextEnumMap = {
 	Wednesday: Day.WEDNESDAY,
 	Thursday: Day.THURSDAY,
 	Saturday: Day.SATURDAY,
+	Friday: Day.FRIDAY,
 };
 
 export const slotNumEnumMap = {

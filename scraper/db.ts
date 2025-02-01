@@ -55,7 +55,6 @@ export async function insertData(courses: TBatchData[]) {
 	try {
 		// Process all courses sequentially
 		for (const course of courses) {
-			console.log(course);
 			if (!course?.schedule?.length) {
 				continue;
 			}
@@ -171,7 +170,8 @@ async function insertArea(name: string): Promise<number> {
 }
 
 /**
- * Replaces the main table with the temp table. This is done to avoid downtime.
+ * Replaces the main slot table with the temp slot table.
+ * This is done to avoid downtime.
  */
 export async function replaceMainTable() {
 	await prisma.$transaction(async (tx) => {

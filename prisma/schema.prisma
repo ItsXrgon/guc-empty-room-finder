@@ -17,6 +17,7 @@ enum Day {
     TUESDAY
     WEDNESDAY
     THURSDAY
+    FRIDAY
 }
 
 enum SlotTime {
@@ -28,11 +29,6 @@ enum SlotTime {
     SIXTH
     SEVENTH
     EIGHTH
-}
-
-model ScrapeTimestamp {
-    id        Int      @id @default(autoincrement())
-    timestamp DateTime @default(now())
 }
 
 model Area {
@@ -88,14 +84,4 @@ model TempSlot {
 
     @@unique([day, time, roomId])
     @@index([day, time, roomId])
-}
-
-model EmptyRoomCache {
-    id        Int      @id @default(autoincrement())
-    key       String // day-startTime-endTime
-    startTime SlotTime
-    endTime   SlotTime
-    roomIds   Int[]
-
-    @@index([key])
 }
