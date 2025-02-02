@@ -62,7 +62,7 @@ export default function Result() {
 		);
 	}
 
-	if (emptyRooms?.length !== 0) {
+	if (emptyRooms?.length === 0) {
 		return (
 			<ResultsContainer>
 				<ResultsEmptyState />
