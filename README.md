@@ -70,7 +70,7 @@ guc-empty-room-finder/
 
 1. Clone the repo
     ```bash
-    git clone https://github.com/your-username/guc-empty-room-finder.git
+    git clone https://github.com/itsXrgon/guc-empty-room-finder.git
     cd guc-empty-room-finder
     ```
 2. Install packages
