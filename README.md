@@ -44,7 +44,7 @@ guc-empty-room-finder/
 │   ├── components/ui/        # Atomic UI components
 │   ├── hooks/
 │   │   ├── useDetectData.ts  # Hook to detect Day and Slot time from device
-│   │   └── useMediaQuery     # Hook to detect if a media query is true
+│   │   └── useMediaQuery.ts  # Hook to detect if a media query is true
 │   ├── lib/                  # Shared types, mappers, consts and etc
 │   │   └── ...
 │   ├── server/               # BE using tRPC
