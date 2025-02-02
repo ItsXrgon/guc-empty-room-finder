@@ -1,21 +1,23 @@
 import React, { Suspense } from "react";
 
-import DaySelect from "./inputs/DaySelect";
-import DetectButton from "./inputs/DetectButton";
-import EndSlotSelect from "./inputs/EndSlotSelect";
-import SlotTimesCheckbox from "./inputs/SlotTimesCheckbox";
-import StartSlotSelect from "./inputs/StartSlotSelect";
+import DaySelect from "../shared/input/DaySelect";
+import DetectButton from "./input/DetectButton";
+import EndSlotSelect from "./input/EndSlotSelect";
+import SlotTimesCheckbox from "./input/SlotTimesCheckbox";
+import StartSlotSelect from "./input/StartSlotSelect";
 import Result from "./output/Result";
+import { Separator } from "~/components/ui/separator";
 
 export default function SlotsForm() {
 	return (
-		<div className="flex flex-col gap-4 p-4">
+		<div className="flex flex-col gap-4">
 			<Suspense>
 				<StartSlotSelect />
 				<EndSlotSelect />
 				<DaySelect />
 				<DetectButton />
 				<SlotTimesCheckbox />
+				<Separator />
 				<Result />
 			</Suspense>
 		</div>

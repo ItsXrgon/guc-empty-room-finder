@@ -1,8 +1,9 @@
+"use client";
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import {
 	Command,
-	CommandEmpty,
 	CommandGroup,
 	CommandInput,
 	CommandItem,
@@ -11,7 +12,8 @@ import {
 import { SearchParams } from "~/lib/types";
 import { api } from "~/trpc/react";
 
-import RoomListSkeleton from "./skeletons/RoomListSkeleton";
+import RoomListSkeleton from "./RoomListSkeleton";
+import RoomsListEmptyState from "./RoomsListEmptyState";
 
 export function RoomList({ setOpen }: { setOpen: (open: boolean) => void }) {
 	const router = useRouter();
@@ -37,21 +39,17 @@ export function RoomList({ setOpen }: { setOpen: (open: boolean) => void }) {
 		<Command className="w-full">
 			<CommandInput placeholder="Filter rooms..." />
 			<CommandList>
-				{!isPending && <CommandEmpty>No rooms found.</CommandEmpty>}
+				{isPending ? <RoomListSkeleton /> : <RoomsListEmptyState />}
 				<CommandGroup>
-					{isPending ? (
-						<RoomListSkeleton />
-					) : (
-						rooms?.map((room) => (
-							<CommandItem
-								key={room.id}
-								value={room.name}
-								onSelect={() => handleSelectRoom(room.name)}
-							>
-								{room.name}
-							</CommandItem>
-						))
-					)}
+					{rooms?.map((room) => (
+						<CommandItem
+							key={room.id}
+							value={room.name}
+							onSelect={() => handleSelectRoom(room.name)}
+						>
+							{room.name}
+						</CommandItem>
+					))}
 				</CommandGroup>
 			</CommandList>
 		</Command>

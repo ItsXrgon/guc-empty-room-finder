@@ -1,7 +1,13 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Separator } from "~/components/ui/separator";
 
-export default function ResultRow({ value }: { value: string }) {
+export default function ResultRow({
+	value,
+	isLast,
+}: {
+	value: ReactNode;
+	isLast: boolean;
+}) {
 	return (
 		<>
 			<div
@@ -10,7 +16,9 @@ export default function ResultRow({ value }: { value: string }) {
 			>
 				{value}
 			</div>
-			<Separator className="my-2" key={"Separator-" + value} />
+			{!isLast && (
+				<Separator className="my-2" key={"Separator-" + value} />
+			)}
 		</>
 	);
 }

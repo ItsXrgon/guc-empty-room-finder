@@ -1,13 +1,10 @@
-"use client";
-
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback } from "react";
-import { Button } from "~/components/ui/button";
+import { useCallback } from "react";
 import { SlotOptions } from "~/lib/consts";
 import { detectDayAndSlot } from "~/lib/detectDayAndSlot";
 import { SearchParams } from "~/lib/types";
 
-export default function DetectButton() {
+export function useDetectDayAndSlot() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -40,11 +37,7 @@ export default function DetectButton() {
 
 			router.push(`${pathname}${query}`);
 		}
-	}, [pathname, router, searchParams]);
-
-	return (
-		<Button variant="secondary" onClick={handleDetect}>
-			Detect Day and Slot
-		</Button>
-	);
+    }, [pathname, router, searchParams]);
+    
+    return handleDetect;
 }

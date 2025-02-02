@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
 	Drawer,
@@ -14,7 +15,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "~/components/ui/popover";
-import { useMediaQuery } from "~/hooks/use-media-query";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { SearchParams } from "~/lib/types";
 
 import { RoomList } from "./RoomList";
@@ -22,7 +23,7 @@ import { RoomList } from "./RoomList";
 export default function RoomSelect() {
 	const searchParams = useSearchParams();
 
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	if (isDesktop) {
@@ -33,7 +34,7 @@ export default function RoomSelect() {
 						{searchParams?.get(SearchParams.Room) ? (
 							<>{searchParams?.get(SearchParams.Room)}</>
 						) : (
-							<>+ Select room</>
+							<>No Room Selected</>
 						)}
 					</Button>
 				</PopoverTrigger>
@@ -51,11 +52,11 @@ export default function RoomSelect() {
 					{searchParams?.get(SearchParams.Room) ? (
 						<>{searchParams?.get(SearchParams.Room)}</>
 					) : (
-						<>+ Select room</>
+						<>No Room Selected</>
 					)}
 				</Button>
 			</DrawerTrigger>
-			<DrawerContent className="h-1/3">
+			<DrawerContent className="h-1/2">
 				<DrawerTitle className="sr-only">
 					Room select drawer
 				</DrawerTitle>

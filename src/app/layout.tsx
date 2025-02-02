@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 	icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default function Layout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
@@ -25,7 +25,7 @@ export default function RootLayout({
 					<HydrateClient>
 						<Header />
 						<div className="flex flex-col min-h-screen bg-background-default">
-							<main className="flex-grow flex justify-center w-screen p-2">
+							<main className="flex-grow flex justify-center w-screen p-4">
 								<Suspense>{children}</Suspense>
 							</main>
 						</div>

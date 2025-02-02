@@ -1,5 +1,6 @@
 import { Day, SlotTime } from "@prisma/client";
 import { z } from "zod";
+import { slotTimeOrder } from "~/lib/mappers";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const roomRouter = createTRPCRouter({
@@ -34,21 +35,28 @@ export const roomRouter = createTRPCRouter({
 
 		return Object.values(groupedRooms);
 	}),
-	showAllEmptyRooms: publicProcedure
+	showEmptyRooms: publicProcedure
 		.input(
 			z.object({
 				day: z.nativeEnum(Day),
 				startSlotTime: z.nativeEnum(SlotTime),
-				endSlotTime: z.nativeEnum(SlotTime),
+				endSlotTime: z.nativeEnum(SlotTime).nullable(),
 			}),
 		)
 		.query(async ({ ctx, input }) => {
 			const { day, startSlotTime, endSlotTime } = input;
 
+			const startValue = slotTimeOrder[startSlotTime];
+			const endValue = endSlotTime ? slotTimeOrder[endSlotTime] : null;
+
 			// Time slots between start and end
-			const slotTimes = Object.values(SlotTime).filter(
-				(time) => time >= startSlotTime && time <= endSlotTime,
-			);
+			const slotTimes = Object.values(SlotTime).filter((time) => {
+				const value = slotTimeOrder[time];
+				if (endValue) {
+					return value >= startValue && value <= endValue;
+				}
+				return value === startValue;
+			});
 
 			const rooms = await ctx.db.room.findMany({
 				where: {
@@ -80,16 +88,32 @@ export const roomRouter = createTRPCRouter({
 	showRoomSchedule: publicProcedure
 		.input(
 			z.object({
-				roomId: z.number(),
+				room: z.string(),
+				day: z.nativeEnum(Day),
 			}),
 		)
-		.query(({ ctx, input }) => {
-			const schedule = ctx.db.room.findUnique({
+		.query(async ({ ctx, input }) => {
+			const room = await ctx.db.room.findFirst({
 				where: {
-					id: input.roomId,
+					name: input.room,
 				},
-				include: {
-					slots: true,
+				select: {
+					id: true,
+				},
+			});
+
+			if (!room) {
+				throw new Error("Room not found");
+			}
+
+			const schedule = await ctx.db.slot.findMany({
+				where: {
+					roomId: {
+						equals: room.id,
+					},
+					day: {
+						equals: input.day,
+					},
 				},
 			});
 			return schedule;

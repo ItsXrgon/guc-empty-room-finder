@@ -3,12 +3,12 @@
 import { Day, SlotTime } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
 import React, { useMemo } from "react";
+import { slotEnumTextMap } from "~/lib/mappers";
 import { SearchParams } from "~/lib/types";
 import { api } from "~/trpc/react";
 
 import ResultRow from "./ResultRow";
 import ResultsContainer from "./ResultsContainer";
-import ResultsEmptyState from "./ResultsEmptyState";
 import ResultsSkeleton from "./ResultsSkeleton";
 
 export default function Result() {
@@ -19,33 +19,23 @@ export default function Result() {
 		[searchParams],
 	);
 
-	const startSlotTime = useMemo(
-		() => searchParams.get(SearchParams.StartSlot) as SlotTime | null,
+	const room = useMemo(
+		() => searchParams.get(SearchParams.Room) as SlotTime | null,
 		[searchParams],
 	);
 
-	const endSlotTime = useMemo(
-		() => searchParams.get(SearchParams.EndSlot) as SlotTime | null,
-		[searchParams],
-	);
+	const enabled = useMemo(() => day !== null && room !== null, [day, room]);
 
-	const enabled = useMemo(
-		() => day !== null && startSlotTime !== null,
-		[day, startSlotTime],
-	);
-
-	const { data: emptyRooms, isPending } = api.room.showEmptyRooms.useQuery(
+	const { data: schedule, isPending } = api.room.showRoomSchedule.useQuery(
 		{
 			day: day!,
-			startSlotTime: startSlotTime!,
-			endSlotTime,
+			room: room!,
 		},
 		{
 			enabled,
 			queryHash: JSON.stringify({
 				day,
-				startSlotTime,
-				endSlotTime,
+				room,
 			}),
 		},
 	);
@@ -62,22 +52,22 @@ export default function Result() {
 		);
 	}
 
-	if (emptyRooms?.length !== 0) {
-		return (
-			<ResultsContainer>
-				<ResultsEmptyState />
-			</ResultsContainer>
-		);
-	}
 	return (
 		<ResultsContainer>
-			{emptyRooms?.map((room, index) => (
-				<ResultRow
-					key={room.id}
-					value={room.name}
-					isLast={index === emptyRooms.length - 1}
-				/>
-			))}
+			{Object.values(SlotTime).map((slotTime, index) => {
+				const taken =
+					schedule?.findIndex((s) => s.time === slotTime) !== -1;
+				const isLast = index === Object.values(SlotTime).length - 1;
+
+				return (
+					<ResultRow
+						key={"slot-" + slotTime}
+						slot={slotEnumTextMap[slotTime]}
+						taken={taken}
+						isLast={isLast}
+					/>
+				);
+			})}
 		</ResultsContainer>
 	);
 }
