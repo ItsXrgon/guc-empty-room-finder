@@ -1,8 +1,10 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useDetectData } from "~/hooks/useDetectData";
+import { SearchParams } from "~/lib/types";
 
 import RoomsForm from "./_components/form/rooms/RoomsForm";
 import SlotsForm from "./_components/form/slots/SlotsForm";
@@ -25,6 +27,17 @@ export default function Home() {
 		},
 		[pathname, router, searchParams],
 	);
+
+	const handleDetect = useDetectData();
+
+	useEffect(() => {
+		if (
+			searchParams.has(SearchParams.Day) === null &&
+			!searchParams.has(SearchParams.StartSlot) === null
+		) {
+			handleDetect();
+		}
+	}, [searchParams, changeActiveTab, handleDetect]);
 
 	return (
 		<Tabs

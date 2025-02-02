@@ -4,7 +4,7 @@ import { SlotOptions } from "~/lib/consts";
 import { detectDayAndSlot } from "~/lib/detectDayAndSlot";
 import { SearchParams } from "~/lib/types";
 
-export function useDetectDayAndSlot() {
+export function useDetectData() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -37,7 +37,7 @@ export function useDetectDayAndSlot() {
 
 			router.push(`${pathname}${query}`);
 		}
-    }, [pathname, router, searchParams]);
-    
-    return handleDetect;
+	}, [pathname, router, searchParams]);
+
+	return handleDetect;
 }

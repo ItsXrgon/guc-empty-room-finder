@@ -1,1 +1,3 @@
-- [ ] Call detect button on page render
+- [ ] Add "find closest room" feature
+- [ ] Figure out how to cron job the scraper
+- [ ] Restructure to monorepo style to separate scraper and website

@@ -8,7 +8,7 @@ export const dayNumEnumMap = {
 	4: Day.THURSDAY,
 	5: Day.FRIDAY,
 	6: Day.SATURDAY,
-};
+} as const;
 
 export const slotTimeOrder = {
 	[SlotTime.FIRST]: 1,
@@ -19,7 +19,7 @@ export const slotTimeOrder = {
 	[SlotTime.SIXTH]: 6,
 	[SlotTime.SEVENTH]: 7,
 	[SlotTime.EIGHTH]: 8,
-};
+} as const;
 
 export const slotEnumTextMap = {
 	[SlotTime.FIRST]: "1st",
@@ -30,4 +30,4 @@ export const slotEnumTextMap = {
 	[SlotTime.SIXTH]: "6th",
 	[SlotTime.SEVENTH]: "7th",
 	[SlotTime.EIGHTH]: "8th",
-};
+} as const;
