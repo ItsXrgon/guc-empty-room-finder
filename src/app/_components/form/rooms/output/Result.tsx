@@ -41,7 +41,7 @@ export default function Result() {
 	);
 
 	if (!enabled) {
-		return <ResultsContainer></ResultsContainer>;
+		return null;
 	}
 
 	if (isPending) {
