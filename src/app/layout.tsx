@@ -8,6 +8,7 @@ import { HydrateClient } from "~/trpc/server";
 
 import Footer from "./_components/Footer";
 import Header from "./_components/Header";
+import { ThemeProvider } from "./_components/theme-provider";
 
 export const metadata: Metadata = {
 	title: "GUC Empty Room Finder",
@@ -19,17 +20,28 @@ export default function Layout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en" className={`${GeistSans.variable}`}>
+		<html
+			lang="en"
+			className={`${GeistSans.variable}`}
+			suppressHydrationWarning
+		>
 			<body>
 				<TRPCReactProvider>
 					<HydrateClient>
-						<Header />
-						<div className="flex flex-col min-h-screen bg-background-default">
-							<main className="flex-grow flex justify-center w-screen p-4">
-								<Suspense>{children}</Suspense>
-							</main>
-						</div>
-						<Footer />
+						<ThemeProvider
+							attribute="class"
+							defaultTheme="system"
+							enableSystem
+							disableTransitionOnChange
+						>
+							<Header />
+							<div className="flex flex-col min-h-screen bg-background-default">
+								<main className="flex-grow flex justify-center w-screen p-4">
+									<Suspense>{children}</Suspense>
+								</main>
+							</div>
+							<Footer />
+						</ThemeProvider>
 					</HydrateClient>
 					<Analytics />
 				</TRPCReactProvider>
