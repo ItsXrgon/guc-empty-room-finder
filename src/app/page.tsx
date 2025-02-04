@@ -32,12 +32,12 @@ export default function Home() {
 
 	useEffect(() => {
 		if (
-			searchParams.has(SearchParams.Day) === null &&
-			searchParams.has(SearchParams.StartSlot) === null
+			!searchParams.has(SearchParams.Day) &&
+			!searchParams.has(SearchParams.StartSlot)
 		) {
 			handleDetect();
 		}
-	}, [searchParams, changeActiveTab, handleDetect]);
+	}, [handleDetect, searchParams]);
 
 	return (
 		<Tabs
