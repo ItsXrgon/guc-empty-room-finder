@@ -33,7 +33,7 @@ export default function Home() {
 	useEffect(() => {
 		if (
 			searchParams.has(SearchParams.Day) === null &&
-			!searchParams.has(SearchParams.StartSlot) === null
+			searchParams.has(SearchParams.StartSlot) === null
 		) {
 			handleDetect();
 		}
