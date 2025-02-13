@@ -14,7 +14,7 @@ export function useDetectData() {
 			isAA: searchParams.get(SearchParams.isAA) === "1",
 		});
 
-		if (slot && day !== undefined) {
+		if (slot && day) {
 			const queryParams = new URLSearchParams(searchParams);
 			queryParams.set(SearchParams.Day, day);
 			queryParams.set(SearchParams.StartSlot, slot);

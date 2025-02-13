@@ -40,9 +40,12 @@ export function detectDayAndSlot({ isAA = false }: { isAA?: boolean }) {
 		}
 	}
 
-	// If no slots match, return null (outside defined slot times)
+	// if no slots  match, return the first slot of the next day
+	const nextDayIndex = (date.getDay() + 1) % 7;
+	const nextDay = dayNumEnumMap[nextDayIndex as keyof typeof dayNumEnumMap];
+	const firstSlot = slotTimes[0]!;
 	return {
-		day: null,
-		slot: null,
+		day: nextDay,
+		slot: firstSlot.value,
 	};
 }
