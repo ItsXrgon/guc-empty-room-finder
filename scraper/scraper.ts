@@ -28,7 +28,7 @@ export async function scraper() {
 	try {
 		beginConnection();
 		browser = await puppeteer.launch({
-			headless: process.env.NODE_ENV === "production",
+			headless: true,
 			defaultViewport: null,
 			protocolTimeout: 1000000,
 		});

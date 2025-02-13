@@ -4,15 +4,15 @@ import { Label } from "~/components/ui/label";
 export default function Footer() {
 	return (
 		<footer className="flex flex-col items-center justify-center pb-1">
-			{/* <Label variant="sm">  // TODO: link something here? 
+			<Label variant="sm">
 				Made by{" "}
 				<a href="" target="_blank" rel="noreferrer noopener">
 					{" "}
 					<Label variant="sm" className="text-blue-500">
-						Ali Koheil
+						Ali Koheil 🦢
 					</Label>
 				</a>
-			</Label> */}
+			</Label>
 			<a
 				href="https://github.com/ItsXrgon/guc-empty-room-finder"
 				target="_blank"
