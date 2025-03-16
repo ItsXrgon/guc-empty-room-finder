@@ -7,28 +7,12 @@ export default function Home() {
 	useEffect(() => {
 		const handleClick = () => {
 			const now = new Date().getTime();
-			let pageHidden = false;
-
-			const handleVisibilityChange = () => {
-				if (document.visibilityState === "hidden") {
-					pageHidden = true;
-				}
-			};
-
-			document.addEventListener(
-				"visibilitychange",
-				handleVisibilityChange,
-			);
 
 			setTimeout(() => {
-				if (!pageHidden && new Date().getTime() - now < 1500) {
+				if (new Date().getTime() - now < 1500) {
 					window.location.href =
 						"https://zeal-dashboard.com/download";
 				}
-				document.removeEventListener(
-					"visibilitychange",
-					handleVisibilityChange,
-				);
 			}, 1000);
 		};
 
